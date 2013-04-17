@@ -1,0 +1,12 @@
+{
+	"pylint":{
+		"osx": "pylint",
+		"windows": "pylint",
+		"linux": "pylint"
+	},
+    "pep8":{
+        "osx": "pep8",
+        "windows": "pep8",
+        "linux": "pep8"
+    }
+}

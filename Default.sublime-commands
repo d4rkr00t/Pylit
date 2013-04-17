@@ -1,0 +1,7 @@
+[
+	{
+	  "id": "pylit",
+	  "caption": "Pylit - Python code quality check",
+	  "command": "pylit"
+	}
+]
