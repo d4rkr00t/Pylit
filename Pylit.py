@@ -6,7 +6,7 @@ Pylit - Pylint and PEP8 Sublime Text integration
 import sublime
 import sublime_plugin
 import subprocess
-
+import re
 
 class Pylit(sublime_plugin.WindowCommand):
     """
@@ -44,7 +44,7 @@ class Pylit(sublime_plugin.WindowCommand):
 
                 view = self.window.new_file()
                 edit = view.begin_edit()
-                view.insert(edit, 0, result)
+                view.insert(edit, 0, replace_line_too_long(result))
 
             except Exception, error:
                 print error
@@ -54,6 +54,11 @@ class Pylit(sublime_plugin.WindowCommand):
             raise Exception("File must be .py")
 
         return True
+
+
+def replace_line_too_long(s):
+    s = re.sub(r".+line too long.+\n","",s)
+    return re.sub(r".+Line too long.+\n","",s)
 
 
 def output_title(filename):
