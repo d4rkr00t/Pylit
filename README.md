@@ -1,7 +1,7 @@
-# Pylit - Pylint Sublime Integration
+# Pylit - Pylint and PEP8 Sublime Text integration
 Inspect py file with PyLint and PEP8 and show results.
 
-Example:
+Example output:
 
     # Pylit.py 
     # ==================================== 
@@ -149,7 +149,7 @@ Example:
 ## Installation
 Note with either method, you may need to restart Sublime Text 2 for the plugin to load.
 
-You must install PHPCodeSniffer!
+You must install Pylint and PEP8 manualy!
 
 ### Package Control
  TODO: Add to Package Control
@@ -157,17 +157,22 @@ You must install PHPCodeSniffer!
 ### Manual
 Clone git repo to Sublime packages dir.
 
-    git clone git://github.com/d4rkr00t/PHPCodeSniffer.git PHPCodeSniffer
+    git clone git://github.com/d4rkr00t/Pylit.git Pylit
 
 After installing plugin, configure path to phpcs executable file:
 
     {
-        "phpcs":{
-            "osx": "phpcs",
-            "windows": "phpcs",
-            "linux": "phpcs"
+      "pylint":{
+        "osx": "pylint",
+        "windows": "pylint",
+        "linux": "pylint"
+      },
+        "pep8":{
+            "osx": "pep8",
+            "windows": "pep8",
+            "linux": "pep8"
         }
     }
 
 ## Usage
-In php file press cmd+p and find "PHPCodeSniffer - Inspect File" command.
+In php file press cmd+p and find "Pylit - Python code quality check" command.
