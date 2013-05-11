@@ -32,13 +32,17 @@ class Pylit(sublime_plugin.WindowCommand):
             settings = sublime.load_settings('Pylit.sublime-settings')
 
             try:
-                result = pep8(settings, self.cur_view, settings.get('remove_line_to_long'))
+                result = pep8(settings, self.cur_view,
+                              settings.get('remove_line_to_long'))
                 self.recomendations = gen_recomendation_list(result)
 
-                result = pylint(settings, self.cur_view, settings.get('remove_line_to_long'))
+                result = pylint(settings, self.cur_view,
+                                settings.get('remove_line_to_long'))
                 self.recomendations += gen_recomendation_list(result)
 
-                self.window.show_quick_panel(self.recomendations, self.selected, sublime.MONOSPACE_FONT)
+                self.window.show_quick_panel(self.recomendations,
+                                             self.selected,
+                                             sublime.MONOSPACE_FONT)
 
             except Exception, error:
                 print error
@@ -51,16 +55,28 @@ class Pylit(sublime_plugin.WindowCommand):
 
     def selected(self, item):
         """
-        Call show line recomendations when user select line in sublime quick panel
+        Call show line recomendations when user
+        select line in sublime quick panel
         """
         show_line_recomendations(self.cur_view, self.recomendations, item)
 
 
+class PylitSave(sublime_plugin.EventListener):
+    """Pylit on save event listner"""
+
+    def on_post_save(self, view):
+        """Remove pylit message after save the view"""
+        view.erase_status("Pylint")
+
+
+# COMMON FUNCTIONS
 def pep8(settings, view, line_to_long, title=False):
     """Check file with pep8 and process output"""
     result = ""
 
-    proccess = subprocess.Popen(settings.get('pep8')[sublime.platform()]+" \""+str(view.file_name())+"\"", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proccess = subprocess.Popen(settings.get('pep8')[sublime.platform()] + " --ignore E501 \"" + str(view.file_name()) + "\"",
+                                shell=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     out, err = proccess.communicate()
     del err
@@ -68,7 +84,7 @@ def pep8(settings, view, line_to_long, title=False):
     if title:
         result += section_title("PEP8")
 
-    result += out.replace(str(view.file_name())+":", "")
+    result += out.replace(str(view.file_name()) + ":", "")
 
     if line_to_long:
         result = remove_line_too_long(result)
@@ -80,8 +96,9 @@ def pylint(settings, view, line_to_long, title=False):
     """Check file with pylint and process output"""
     result = ""
 
-    proccess = subprocess.Popen(settings.get('pylint')[sublime.platform()]+" \""+str(view.file_name())+"\"",
-                                shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proccess = subprocess.Popen(settings.get('pylint')[sublime.platform()] + " \"" + str(view.file_name()) + "\"",
+                                shell=True, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
 
     out, err = proccess.communicate()
     del err
@@ -89,7 +106,8 @@ def pylint(settings, view, line_to_long, title=False):
     if title:
         result += section_title("PyLint")
     else:
-        result = re.sub(r"\*\*\*\*\*\*\*\*\*\*\*\*\* Module .+\n", "", out).split("Report")
+        result = re.sub(r"\*\*\*\*\*\*\*\*\*\*\*\*\* Module .+\n",
+                        "", out).split("Report")
         if result[0]:
             result = result[0]
             result = result.replace('\n', '')
@@ -102,7 +120,8 @@ def pylint(settings, view, line_to_long, title=False):
 
 
 def show_line_recomendations(view, rec_list, item):
-    """Move cursor to line where need fixes and show fix missage in status bar"""
+    """Move cursor to line where need fixes and
+    show fix missage in status bar"""
     print rec_list[item]
     line, column = False, False
 
@@ -111,7 +130,7 @@ def show_line_recomendations(view, rec_list, item):
         line, column = re.findall(r"[\d]+", match.groups()[0])
 
     if line and column:
-        point = view.text_point(int(line)-1, int(column)-1)
+        point = view.text_point(int(line) - 1, int(column) - 1)
 
         view.sel().clear()
         view.sel().add(sublime.Region(point))
@@ -145,7 +164,7 @@ def remove_line_too_long(line):
 
 def output_title(filename):
     """ Generate output titlt """
-    result = "# "+str(filename)+" \n"
+    result = "# " + str(filename) + " \n"
     result += "# ==================================== \n\n"
 
     return result
@@ -154,7 +173,7 @@ def output_title(filename):
 def section_title(title):
     """ Generate section titlt """
     result = "# ==================================== \n"
-    result += "# "+str(title)+" \n"
+    result += "# " + str(title) + " \n"
     result += "# ==================================== \n\n"
 
     return result
