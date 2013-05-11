@@ -1,5 +1,5 @@
 {
-    "remove_line_to_long": true,
+    "remove_line_to_long": false,
 	"pylint":{
 		"osx": "pylint",
 		"windows": "pylint",

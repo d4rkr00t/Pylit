@@ -1,7 +1,67 @@
 # Pylit - Pylint and PEP8 Sublime Text integration
 Inspect py file with PyLint and PEP8 and show results.
 
+## Installation
+Note with either method, you may need to restart Sublime Text 2 for the plugin to load.
+
+You must install Pylint and PEP8 manualy!
+
+### Package Control
+TODO: Add to Package Control
+
+### Manual
+Clone git repo to Sublime packages dir.
+
+    git clone git://github.com/d4rkr00t/Pylit.git Pylit
+
+After installing plugin, configure path to phpcs executable file:
+
+    {
+        "remove_line_to_long": false, # remove message for line to long
+        "pylint":{
+            "osx": "pylint",
+            "windows": "pylint",
+            "linux": "pylint"
+        },
+        "pep8":{
+            "osx": "pep8",
+            "windows": "pep8",
+            "linux": "pep8"
+        }
+    }
+
+## Usage
+
+Plugin has two commands:
+
+### Pylit command:
+In .py file press cmd+p and find "Pylit - Python code quality check" command.
+Thats show list of pep8 and pylint recomandation and if you select its line coursour has been moved to place where fix is needed.
+
 Example output:
+
+![pylint](https://dl.dropboxusercontent.com/u/3678884/pylin-screenshot.png)
+
+### Pylit Report command
+In .py file press cmd+p and find "Pylit Report - Python code quality check and report" command.
+This command will be generate a more complete report for current file.
+
+Example output:
+
+    # ====================================
+    # PEP8
+    # ====================================
+
+    2:15: E401 multiple imports on one line
+    5:1: E302 expected 2 blank lines, found 1
+    14:80: E501 line too long (119 > 79 characters)
+    14:119: E502 the backslash is redundant between brackets
+    15:21: E128 continuation line under-indented for visual indent
+    23:80: E501 line too long (117 > 79 characters)
+    23:117: E502 the backslash is redundant between brackets
+    24:21: E128 continuation line under-indented for visual indent
+    29:68: E231 missing whitespace after ','
+    40:1: W293 blank line contains whitespace
 
     # Pylit.py
     # ====================================
@@ -128,51 +188,3 @@ Example output:
     +---------+-------+-----------+-----------+------------+---------+
     |function |0      |0          |=          |0           |0        |
     +---------+-------+-----------+-----------+------------+---------+
-
-
-
-    # ====================================
-    # PEP8
-    # ====================================
-
-    2:15: E401 multiple imports on one line
-    5:1: E302 expected 2 blank lines, found 1
-    14:80: E501 line too long (119 > 79 characters)
-    14:119: E502 the backslash is redundant between brackets
-    15:21: E128 continuation line under-indented for visual indent
-    23:80: E501 line too long (117 > 79 characters)
-    23:117: E502 the backslash is redundant between brackets
-    24:21: E128 continuation line under-indented for visual indent
-    29:68: E231 missing whitespace after ','
-    40:1: W293 blank line contains whitespace
-
-## Installation
-Note with either method, you may need to restart Sublime Text 2 for the plugin to load.
-
-You must install Pylint and PEP8 manualy!
-
-### Package Control
- TODO: Add to Package Control
-
-### Manual
-Clone git repo to Sublime packages dir.
-
-    git clone git://github.com/d4rkr00t/Pylit.git Pylit
-
-After installing plugin, configure path to phpcs executable file:
-
-    {
-      "pylint":{
-        "osx": "pylint",
-        "windows": "pylint",
-        "linux": "pylint"
-      },
-        "pep8":{
-            "osx": "pep8",
-            "windows": "pep8",
-            "linux": "pep8"
-        }
-    }
-
-## Usage
-In php file press cmd+p and find "Pylit - Python code quality check" command.
