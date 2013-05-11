@@ -3,5 +3,10 @@
 	  "id": "pylit",
 	  "caption": "Pylit - Python code quality check",
 	  "command": "pylit"
-	}
+	},
+    {
+      "id": "pylit_report",
+      "caption": "Pylit Report - Python code quality check and report",
+      "command": "pylit_report"
+    }
 ]

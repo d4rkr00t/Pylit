@@ -3,11 +3,6 @@
 Pylit - Pylint and PEP8 Sublime Text integration
 """
 
-# result = output_title(str(self.cur_view.file_name()))
-# view = self.window.new_file()
-# edit = view.begin_edit()
-# view.insert(edit, 0, replace_line_too_long(result))
-
 import sublime
 import sublime_plugin
 import subprocess
@@ -61,6 +56,50 @@ class Pylit(sublime_plugin.WindowCommand):
         show_line_recomendations(self.cur_view, self.recomendations, item)
 
 
+class PylitReport(sublime_plugin.WindowCommand):
+    """
+    Pylit command class for pylit report command
+    """
+    recomendations = []
+    cur_view = None
+
+    def run(self):
+        """
+        Runing file analyze with pylint and pep8
+        """
+        self.cur_view = self.window.active_view()
+
+        if "py" in self.cur_view.syntax_name(self.cur_view.sel()[0].b):
+
+            settings = sublime.load_settings('Pylit.sublime-settings')
+
+            result = output_title(str(self.cur_view.file_name()))
+
+            try:
+                result += pep8(settings, self.cur_view,
+                               settings.get('remove_line_to_long'), True)
+
+                print result
+
+                result += pylint(settings, self.cur_view,
+                                 settings.get('remove_line_to_long'), True)
+
+                print result
+
+                view = self.window.new_file()
+                edit = view.begin_edit()
+                view.insert(edit, 0, remove_line_too_long(result, settings.get('remove_line_to_long')))
+
+            except Exception, error:
+                print error
+
+        else:
+            sublime.error_message("File must be .py")
+            raise Exception("File must be .py")
+
+        return True
+
+
 class PylitSave(sublime_plugin.EventListener):
     """Pylit on save event listner"""
 
@@ -74,7 +113,8 @@ def pep8(settings, view, line_to_long, title=False):
     """Check file with pep8 and process output"""
     result = ""
 
-    proccess = subprocess.Popen(settings.get('pep8')[sublime.platform()] + " --ignore E501 \"" + str(view.file_name()) + "\"",
+    proccess = subprocess.Popen(settings.get('pep8')[sublime.platform()] + " --ignore E501 \"" + str(view.file_name()) +
+                                "\"",
                                 shell=True,
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
@@ -87,7 +127,7 @@ def pep8(settings, view, line_to_long, title=False):
     result += out.replace(str(view.file_name()) + ":", "")
 
     if line_to_long:
-        result = remove_line_too_long(result)
+        result = remove_line_too_long(result, True)
 
     return result
 
@@ -105,16 +145,17 @@ def pylint(settings, view, line_to_long, title=False):
 
     if title:
         result += section_title("PyLint")
+        result += out
     else:
-        result = re.sub(r"\*\*\*\*\*\*\*\*\*\*\*\*\* Module .+\n",
-                        "", out).split("Report")
-        if result[0]:
-            result = result[0]
+        regexped = re.sub(r"\*\*\*\*\*\*\*\*\*\*\*\*\* Module .+\n",
+                          "", out).split("Report")
+        if regexped[0]:
+            result = regexped[0]
             result = result.replace('\n', '')
             result = result.replace('C:', '\nC:').replace('W:', '\nW:').replace('E:', '\nE:').replace('F:', '\nF:')
 
     if line_to_long:
-        result = remove_line_too_long(result)
+        result = remove_line_too_long(result, True)
 
     return result
 
@@ -156,10 +197,13 @@ def gen_recomendation_list(output):
     return result
 
 
-def remove_line_too_long(line):
+def remove_line_too_long(line, remove):
     """Remove line to long message"""
-    line = re.sub(r".+line too long.+\n", "", line)
-    return re.sub(r".+Line too long.+\n", "", line)
+    if remove:
+        line = re.sub(r".+line too long.+\n", "", line)
+        return re.sub(r".+Line too long.+\n", "", line)
+
+    return line
 
 
 def output_title(filename):
@@ -172,7 +216,7 @@ def output_title(filename):
 
 def section_title(title):
     """ Generate section titlt """
-    result = "# ==================================== \n"
+    result = "\n\n# ==================================== \n"
     result += "# " + str(title) + " \n"
     result += "# ==================================== \n\n"
 
