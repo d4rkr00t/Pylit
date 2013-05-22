@@ -14,7 +14,7 @@ Clone git repo to Sublime packages dir.
 
     git clone git://github.com/d4rkr00t/Pylit.git Pylit
 
-After installing plugin, configure path to phpcs executable file:
+After installing plugin, configure path to pylint and pep8 executable files:
 
     {
         "remove_line_to_long": false, # remove message for line to long
