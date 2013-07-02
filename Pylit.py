@@ -39,8 +39,8 @@ class Pylit(sublime_plugin.WindowCommand):
                                              self.selected,
                                              sublime.MONOSPACE_FONT)
 
-            except Exception, error:
-                print error
+            except Exception as error:
+                print(error)
 
         else:
             sublime.error_message("File must be .py")
@@ -79,19 +79,19 @@ class PylitReport(sublime_plugin.WindowCommand):
                 result += pep8(settings, self.cur_view,
                                settings.get('remove_line_to_long'), True)
 
-                print result
+                print(result)
 
                 result += pylint(settings, self.cur_view,
                                  settings.get('remove_line_to_long'), True)
 
-                print result
+                print(result)
 
                 view = self.window.new_file()
                 edit = view.begin_edit()
                 view.insert(edit, 0, remove_line_too_long(result, settings.get('remove_line_to_long')))
 
-            except Exception, error:
-                print error
+            except Exception as error:
+                print(error)
 
         else:
             sublime.error_message("File must be .py")
@@ -163,7 +163,7 @@ def pylint(settings, view, line_to_long, title=False):
 def show_line_recomendations(view, rec_list, item):
     """Move cursor to line where need fixes and
     show fix missage in status bar"""
-    print rec_list[item]
+    print(rec_list[item])
     line, column = False, False
 
     match = re.search(r"(\d+[\:|,]\d+)\:", rec_list[item])
