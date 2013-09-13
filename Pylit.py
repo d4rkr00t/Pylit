@@ -22,17 +22,19 @@ class Pylit(sublime_plugin.WindowCommand):
         """
         self.cur_view = self.window.active_view()
 
-        if "py" in self.cur_view.syntax_name(self.cur_view.sel()[0].b):
+        if "py" in self.cur_view.scope_name(self.cur_view.sel()[0].b):
 
             settings = sublime.load_settings('Pylit.sublime-settings')
 
             try:
                 result = pep8(settings, self.cur_view,
                               settings.get('remove_line_to_long'))
+
                 self.recomendations = gen_recomendation_list(result)
 
                 result = pylint(settings, self.cur_view,
                                 settings.get('remove_line_to_long'))
+
                 self.recomendations += gen_recomendation_list(result)
 
                 self.window.show_quick_panel(self.recomendations,
@@ -40,6 +42,7 @@ class Pylit(sublime_plugin.WindowCommand):
                                              sublime.MONOSPACE_FONT)
 
             except Exception as error:
+                print(123)
                 print(error)
 
         else:
@@ -69,7 +72,7 @@ class PylitReport(sublime_plugin.WindowCommand):
         """
         self.cur_view = self.window.active_view()
 
-        if "py" in self.cur_view.syntax_name(self.cur_view.sel()[0].b):
+        if "py" in self.cur_view.scope_name(self.cur_view.sel()[0].b):
 
             settings = sublime.load_settings('Pylit.sublime-settings')
 
@@ -79,16 +82,10 @@ class PylitReport(sublime_plugin.WindowCommand):
                 result += pep8(settings, self.cur_view,
                                settings.get('remove_line_to_long'), True)
 
-                print(result)
-
                 result += pylint(settings, self.cur_view,
                                  settings.get('remove_line_to_long'), True)
 
                 print(result)
-
-                view = self.window.new_file()
-                edit = view.begin_edit()
-                view.insert(edit, 0, remove_line_too_long(result, settings.get('remove_line_to_long')))
 
             except Exception as error:
                 print(error)
@@ -119,12 +116,12 @@ def pep8(settings, view, line_to_long, title=False):
                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     out, err = proccess.communicate()
-    del err
+    # del err
 
     if title:
         result += section_title("PEP8")
 
-    result += out.replace(str(view.file_name()) + ":", "")
+    result += out.decode().replace(str(view.file_name()) + ":", "")
 
     if line_to_long:
         result = remove_line_too_long(result, True)
@@ -145,10 +142,10 @@ def pylint(settings, view, line_to_long, title=False):
 
     if title:
         result += section_title("PyLint")
-        result += out
+        result += out.decode()
     else:
         regexped = re.sub(r"\*\*\*\*\*\*\*\*\*\*\*\*\* Module .+\n",
-                          "", out).split("Report")
+                          "", out.decode()).split("Report")
         if regexped[0]:
             result = regexped[0]
             result = result.replace('\n', '')
@@ -163,31 +160,33 @@ def pylint(settings, view, line_to_long, title=False):
 def show_line_recomendations(view, rec_list, item):
     """Move cursor to line where need fixes and
     show fix missage in status bar"""
-    print(rec_list[item])
-    line, column = False, False
+    if item >= 0:
+        print(rec_list[item])
+        line, column = False, False
 
-    match = re.search(r"(\d+[\:|,]\d+)\:", rec_list[item])
-    if match:
-        line, column = re.findall(r"[\d]+", match.groups()[0])
+        match = re.search(r"(\d+[\:|,]\d+)\:", rec_list[item])
+        if match:
+            line, column = re.findall(r"[\d]+", match.groups()[0])
 
-    if line and column:
-        point = view.text_point(int(line) - 1, int(column) - 1)
+        if line and column:
+            point = view.text_point(int(line) - 1, int(column) - 1)
 
-        view.sel().clear()
-        view.sel().add(sublime.Region(point))
+            view.sel().clear()
+            view.sel().add(sublime.Region(point))
 
-        view.show(sublime.Region(point))
+            view.show(sublime.Region(point))
 
-        view.erase_status("Pylint")
-        view.set_status("Pylint", rec_list[item])
-    else:
-        sublime.error_message("No line founded!")
-        raise Exception("No line founded!")
+            view.erase_status("Pylint")
+            view.set_status("Pylint", rec_list[item])
+        else:
+            sublime.error_message("No line founded!")
+            raise Exception("No line founded!")
 
 
 def gen_recomendation_list(output):
     """Generate list of recomendations"""
     result = []
+
     output = output.split("\n")
 
     for line in output:
